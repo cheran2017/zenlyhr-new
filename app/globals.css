@@ -183,9 +183,9 @@ button { font-family: inherit; cursor: pointer; }
   pointer-events: none;
 }
 
-/* The hero band is held at the source image's own aspect ratio
-   (1280x495 => 38.7vw) so the marble Z always renders at its natural
-   scale, uncropped — exactly as framed in the reference video. */
+/* The hero band is held at the backdrop's own aspect ratio
+   (1280x495 => 38.7vw) so the office plate always renders at its
+   natural scale, uncropped — exactly as framed in the reference. */
 .hero-inner {
   position: relative;
   z-index: 2;
@@ -203,83 +203,32 @@ button { font-family: inherit; cursor: pointer; }
 .hero-sub { color: var(--ink-soft); font-size: 15px; line-height: 1.65; max-width: 44ch; margin: 0 0 26px; }
 .hero-ctas { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 
-/* Vertical light beam shooting up from the pedestal, anchored at its
-   base (bottom-center transform-origin) and grown/pulsed via GSAP
-   rather than CSS, so it doesn't fight the entrance timeline. */
-/* Pedestal light burst. In the reference clip this is a wide fan of
-   rays flaring up out of the plinth — white-hot at the core, rose at the
-   edges — not a soft round blob, so it is built as a ray fan
-   (repeating conic gradient) over a radial bloom, both masked to fade
-   out at the top. Anchored bottom-centre and scaled by GSAP. */
-/* Normal blending on purpose: `screen` is close to a no-op against this
-   near-white lobby plate, so the burst has to paint over it to read. */
-.hero-glow {
+/* The 3D layer: a transparent WebGL canvas holding the marble Z, its
+   plinth and the orbit, composited straight over the photographic
+   backdrop. Sized to the right-hand portion of the stage, where the
+   monument stands in the reference. */
+.hero-monument {
   position: absolute;
-  width: 390px;
-  height: 230px;
-  pointer-events: none;
+  inset: 0;
   z-index: 1;
-  background: radial-gradient(ellipse at 50% 100%,
-    rgba(255,255,255,0.98) 0%,
-    rgba(255,255,255,0.72) 14%,
-    rgba(255,244,250,0.34) 32%,
-    rgba(255,232,244,0.12) 54%,
-    rgba(255,232,244,0) 76%);
-  filter: blur(6px);
-}
-.hero-glow::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-conic-gradient(from 208deg at 50% 100%,
-    rgba(255,255,255,0.4) 0deg 1.4deg,
-    rgba(255,248,252,0.07) 1.4deg 3deg,
-    rgba(255,255,255,0) 3deg 6.6deg);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 100%, #000 6%, rgba(0,0,0,0.5) 34%, transparent 64%);
-  mask-image: radial-gradient(ellipse at 50% 100%, #000 6%, rgba(0,0,0,0.5) 34%, transparent 64%);
-  filter: blur(2.5px);
-}
-/* white-hot core right at the plinth surface */
-.hero-glow::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -6%;
-  width: 46%;
-  height: 26%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(233,255,240,0.8) 45%, rgba(255,255,255,0) 100%);
-  filter: blur(5px);
-}
-
-/* Orbit trails the pills travel along. */
-.connector-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
-/* Kept deliberately faint — in the clip these read as soft light wisps
-   catching the ring, not drawn wireframe. */
-.connector-layer ellipse {
-  fill: none;
-  stroke: rgba(255,255,255,0.3);
-  stroke-width: 0.11;
-}
-
-.pill-layer { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
-/* Same pixels as the plate behind it, clipped to the Z, so far-side
-   pills slide behind the monument. background-size/position must stay
-   in step with .hero-bg img's object-fit/object-position. */
-.hero-occluder {
-  position: absolute;
-  inset: 0;
-  z-index: 100;
   pointer-events: none;
-  background-image: url("/images/hero-scene.png");
-  background-size: cover;
-  background-position: 70% 45%;
 }
-/* left/top/scale/z-index/filter are driven by the orbit in Hero.jsx.
-   Chips stay fully opaque: depth reads through scale and through being
-   occluded by the monument, not through transparency — letting the
-   marble show through a chip just looks like a rendering fault. */
+.hero-3d {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 37%;
+  right: 0;
+}
+.hero-3d-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* Chips stay real DOM nodes — crisp text and real fonts — but their
+   position, scale, stacking and occlusion are all written each frame
+   from the 3D camera's projection (see HeroMonument.jsx). */
+.hero-3d-pills { position: absolute; inset: 0; pointer-events: none; }
 .pill {
   position: absolute;
   display: inline-flex;
@@ -448,6 +397,11 @@ button { font-family: inherit; cursor: pointer; }
   .hero-inner { min-height: 440px; padding: 90px 20px 50px; }
   .hero-copy { max-width: 100%; }
   .hero-bg img { object-position: 82% 45%; }
+  /* The copy becomes full width below this breakpoint. The softened
+     backdrop still establishes the monument, while disabling WebGL here
+     keeps the headline and CTAs clear rather than placing a live model
+     across them. */
+  .hero-monument { display: none; }
   .hero-bg::after {
     background:
       linear-gradient(100deg, rgba(247,246,241,0.92) 0%, rgba(247,246,241,0.55) 45%, rgba(247,246,241,0.05) 75%),
