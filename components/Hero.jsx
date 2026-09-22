@@ -23,78 +23,84 @@ export default function Hero() {
   const ctasRef = useRef(null);
 
   useEffect(() => {
-    // 1. Entrance choreography on page load
-    const entranceTl = gsap.timeline({ delay: 0.1 });
+    if (typeof window === "undefined") return;
 
-    entranceTl
-      .fromTo(breadcrumbRef.current, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.45, ease: "power1.out" }, 0)
-      .fromTo(lineRefs.current[0], { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.05)
-      .fromTo(lineRefs.current[1], { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.2)
-      .fromTo(lineRefs.current[2], { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.35)
-      .fromTo(subRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power1.out" }, 0.42)
-      .fromTo(ctasRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power1.out" }, 0.48);
+    const ctx = gsap.context(() => {
+      // 1. Entrance choreography on page load
+      const entranceTl = gsap.timeline({ delay: 0.05 });
 
-    // 2. GSAP ScrollTrigger sequence: focus to Z monument before moving to solutions
-    const isMobile = window.matchMedia("(max-width: 980px)").matches;
-    let scrollTl = null;
-
-    if (!isMobile && pinWrapperRef.current && visualRef.current && copyRef.current) {
-      scrollTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: pinWrapperRef.current,
-          start: "top top",
-          end: "+=130%",
-          pin: true,
-          scrub: 0.8,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
+      if (breadcrumbRef.current) {
+        entranceTl.fromTo(breadcrumbRef.current, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4, ease: "power1.out" }, 0);
+      }
+      lineRefs.current.forEach((el, i) => {
+        if (el) {
+          entranceTl.fromTo(el, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, 0.05 + i * 0.12);
+        }
       });
+      if (subRef.current) {
+        entranceTl.fromTo(subRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power1.out" }, 0.35);
+      }
+      if (ctasRef.current) {
+        entranceTl.fromTo(ctasRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power1.out" }, 0.42);
+      }
 
-      scrollTl
-        // Phase 1: Left-hand copy and stats smoothly fade out
-        .to(
-          copyRef.current,
-          {
-            opacity: 0,
-            x: -75,
-            filter: "blur(4px)",
-            ease: "power2.inOut",
-            duration: 0.35,
-          },
-          0
-        )
-        .to(
-          statsRef.current,
-          {
-            opacity: 0,
-            y: 35,
-            ease: "power2.inOut",
-            duration: 0.28,
-          },
-          0
-        )
-        // Phase 2: Visual stage zooms in and shifts to center on the 3D Z monument
-        .to(
-          visualRef.current,
-          {
-            scale: 1.55,
-            xPercent: -21,
-            yPercent: 2,
-            ease: "power2.inOut",
-            duration: 0.65,
-          },
-          0
-        )
-        // Phase 3: Hold the centered Z view so the user appreciates the 3D showcase
-        .to({}, { duration: 0.35 });
-    }
+      // 2. GSAP ScrollTrigger sequence: focus to Z monument before moving to solutions
+      const isMobile = window.matchMedia("(max-width: 980px)").matches;
 
-    return () => {
-      entranceTl.kill();
-      scrollTl?.scrollTrigger?.kill();
-      scrollTl?.kill();
-    };
+      if (!isMobile && pinWrapperRef.current && visualRef.current && copyRef.current) {
+        const scrollTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: pinWrapperRef.current,
+            start: "top top",
+            end: "+=100%",
+            pin: true,
+            scrub: 0.6,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        scrollTl
+          // Phase 1: Left-hand copy and stats smoothly fade out
+          .to(
+            copyRef.current,
+            {
+              opacity: 0,
+              x: -60,
+              filter: "blur(4px)",
+              ease: "power1.inOut",
+              duration: 0.35,
+            },
+            0
+          )
+          .to(
+            statsRef.current,
+            {
+              opacity: 0,
+              y: 30,
+              ease: "power1.inOut",
+              duration: 0.28,
+            },
+            0
+          )
+          // Phase 2: Visual stage zooms in and centers cleanly on the 3D Z monument with generous top headroom
+          .to(
+            visualRef.current,
+            {
+              scale: 1.34,
+              xPercent: -21,
+              yPercent: 7,
+              ease: "power1.inOut",
+              duration: 0.65,
+            },
+            0
+          )
+          // Phase 3: Hold the centered Z view so the user appreciates the 3D showcase
+          .to({}, { duration: 0.35 });
+      }
+    }, pinWrapperRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (

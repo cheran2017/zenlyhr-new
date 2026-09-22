@@ -194,8 +194,8 @@ export default function HeroMonument() {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-    camera.position.set(0, 0.95, 12.2);
-    camera.lookAt(0, -0.02, 0);
+    camera.position.set(0, 0.72, 12.6);
+    camera.lookAt(0, -0.15, 0);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
