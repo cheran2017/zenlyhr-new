@@ -17,12 +17,12 @@ import * as THREE from "three";
    against the actual mesh. */
 
 const PILLS = [
-  { key: "manage", label: "Manage", dot: "#5b8def", angle: 250 },
+  { key: "manage", label: "Manage", dot: "#008080", angle: 250 },
   { key: "people", label: "People", dot: "#e5973f", angle: 310 },
-  { key: "global", label: "Go Global", dot: "#5b8def", angle: 10 },
-  { key: "grow", label: "Grow", dot: "#3fae61", angle: 70 },
-  { key: "hire", label: "Hire", dot: "#3fae61", angle: 130 },
-  { key: "comply", label: "Go Comply", dot: "#8f6de5", angle: 190 },
+  { key: "global", label: "Go Global", dot: "#009688", angle: 10 },
+  { key: "grow", label: "Grow", dot: "#20b2aa", angle: 70 },
+  { key: "hire", label: "Hire", dot: "#008080", angle: 130 },
+  { key: "comply", label: "Go Comply", dot: "#5b8def", angle: 190 },
 ];
 
 /* Timings read off the reference clip. Its ring completes a revolution
@@ -109,7 +109,7 @@ function makePillSprite({ label, dot }) {
   const ctx = canvas.getContext("2d");
   ctx.scale(density, density);
 
-  ctx.shadowColor = "rgba(23, 28, 19, 0.22)";
+  ctx.shadowColor = "rgba(0, 128, 128, 0.16)";
   ctx.shadowBlur = 11;
   ctx.shadowOffsetY = 5;
   ctx.fillStyle = "#ffffff";
@@ -122,7 +122,7 @@ function makePillSprite({ label, dot }) {
   ctx.beginPath();
   ctx.arc(left + dotSize / 2, height / 2, dotSize / 2, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#20231d";
+  ctx.fillStyle = "#0b1a1c";
   ctx.font = "700 14px Manrope, Arial, sans-serif";
   ctx.textBaseline = "middle";
   ctx.fillText(label, left + dotSize + gap, height / 2 + 0.5);
@@ -282,9 +282,9 @@ export default function HeroMonument() {
     glowCanvas.width = glowCanvas.height = 128;
     const gctx = glowCanvas.getContext("2d");
     const grad = gctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-    grad.addColorStop(0, "rgba(226,255,240,0.85)");
-    grad.addColorStop(0.45, "rgba(214,245,232,0.3)");
-    grad.addColorStop(1, "rgba(214,245,232,0)");
+    grad.addColorStop(0, "rgba(220,255,252,0.92)");
+    grad.addColorStop(0.4, "rgba(0,180,180,0.38)");
+    grad.addColorStop(1, "rgba(0,128,128,0)");
     gctx.fillStyle = grad;
     gctx.fillRect(0, 0, 128, 128);
     const glowTex = new THREE.CanvasTexture(glowCanvas);

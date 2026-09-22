@@ -27,18 +27,18 @@ export default function Growth() {
           {
             label: "Employee engagement",
             data: DATA,
-            borderColor: "#5c7a3f",
+            borderColor: "#008080",
             backgroundColor: (ctx) => {
               const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 220);
-              g.addColorStop(0, "rgba(92,122,63,0.35)");
-              g.addColorStop(1, "rgba(92,122,63,0)");
+              g.addColorStop(0, "rgba(0, 128, 128, 0.28)");
+              g.addColorStop(1, "rgba(0, 128, 128, 0)");
               return g;
             },
             fill: true,
             tension: 0.4,
             pointRadius: 3,
             pointBackgroundColor: "#fff",
-            pointBorderColor: "#5c7a3f",
+            pointBorderColor: "#008080",
             pointBorderWidth: 2,
           },
         ],
@@ -47,8 +47,8 @@ export default function Growth() {
         responsive: true,
         plugins: { legend: { display: false } },
         scales: {
-          y: { grid: { color: "#eee" }, ticks: { color: "#9a9a8c" } },
-          x: { grid: { display: false }, ticks: { color: "#9a9a8c" } },
+          y: { grid: { color: "#e2e8f0" }, ticks: { color: "#64748b" } },
+          x: { grid: { display: false }, ticks: { color: "#64748b" } },
         },
         animation: { duration: 1400, easing: "easeOutQuart" },
       },

@@ -15,18 +15,13 @@ export default function Nav() {
   return (
     <header className={`site-nav${scrolled ? " scrolled" : ""}`}>
       <div className="nav-inner">
-        <a href="#" className="brand">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="9" fill="#20281f" />
-            <path
-              d="M10 10H22L11 22H23"
-              stroke="#8fae5d"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span>ZenlyHR</span>
+        <a href="#" className="brand" aria-label="Zenly HR">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/client-logo.png"
+            alt="Zenly HR"
+            style={{ height: "34px", width: "auto", display: "block" }}
+          />
         </a>
 
         <nav className={`nav-links${open ? " nav-links--open" : ""}`}>
