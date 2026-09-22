@@ -61,6 +61,7 @@ export default function Growth() {
   useEffect(() => {
     if (!visualRef.current) return;
     const els = visualRef.current.querySelectorAll(".float-card, .float-icon");
+    const floatingTweens = [];
 
     const countUp = (el) => {
       if (!el) return;
@@ -86,6 +87,47 @@ export default function Growth() {
             duration: 0.7,
             stagger: 0.12,
             ease: "power2.out",
+            onComplete: () => {
+              const card = visualRef.current?.querySelector(".float-card");
+              const bulb = visualRef.current?.querySelector(".float-icon--bulb");
+              const bars = visualRef.current?.querySelector(".float-icon--bars");
+
+              if (card) {
+                floatingTweens.push(
+                  gsap.to(card, {
+                    y: -8,
+                    duration: 2.8,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut",
+                  })
+                );
+              }
+              if (bulb) {
+                floatingTweens.push(
+                  gsap.to(bulb, {
+                    y: -10,
+                    duration: 2.4,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut",
+                    delay: 0.2,
+                  })
+                );
+              }
+              if (bars) {
+                floatingTweens.push(
+                  gsap.to(bars, {
+                    y: 7,
+                    duration: 3.1,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut",
+                    delay: 0.4,
+                  })
+                );
+              }
+            },
           });
           countUp(chartBadgeRef.current);
           countUp(floatValueRef.current);
@@ -101,7 +143,10 @@ export default function Growth() {
       { threshold: 0.2 }
     );
     observer.observe(visualRef.current);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      floatingTweens.forEach((t) => t.kill());
+    };
   }, []);
 
   return (

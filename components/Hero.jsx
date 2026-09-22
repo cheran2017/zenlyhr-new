@@ -11,9 +11,9 @@ if (typeof window !== "undefined") {
 }
 
 export default function Hero() {
-  const pinWrapperRef = useRef(null);
-  const stageRef = useRef(null);
+  const containerRef = useRef(null);
   const visualRef = useRef(null);
+  const burstRef = useRef(null);
   const copyRef = useRef(null);
   const statsRef = useRef(null);
 
@@ -44,19 +44,16 @@ export default function Hero() {
         entranceTl.fromTo(ctasRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power1.out" }, 0.42);
       }
 
-      // 2. GSAP ScrollTrigger sequence: focus to Z monument before moving to solutions
+      // 2. GSAP ScrollTrigger sequence: focus to Z monument and flare pedestal glow before moving to solutions
       const isMobile = window.matchMedia("(max-width: 980px)").matches;
 
-      if (!isMobile && pinWrapperRef.current && visualRef.current && copyRef.current) {
+      if (!isMobile && containerRef.current && visualRef.current && copyRef.current) {
         const scrollTl = gsap.timeline({
           scrollTrigger: {
-            trigger: pinWrapperRef.current,
+            trigger: containerRef.current,
             start: "top top",
-            end: "+=100%",
-            pin: true,
+            end: "bottom bottom",
             scrub: 0.6,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
           },
         });
 
@@ -66,8 +63,8 @@ export default function Hero() {
             copyRef.current,
             {
               opacity: 0,
-              x: -60,
-              filter: "blur(4px)",
+              x: -70,
+              filter: "blur(5px)",
               ease: "power1.inOut",
               duration: 0.35,
             },
@@ -77,13 +74,26 @@ export default function Hero() {
             statsRef.current,
             {
               opacity: 0,
-              y: 30,
+              y: 35,
               ease: "power1.inOut",
               duration: 0.28,
             },
             0
           )
-          // Phase 2: Visual stage zooms in and centers cleanly on the 3D Z monument with generous top headroom
+          // Phase 2: Radiant pedestal light glow flares open behind the 3D Z
+          .to(
+            burstRef.current,
+            {
+              scale: 1.55,
+              opacity: 1,
+              xPercent: -21,
+              filter: "brightness(1.3)",
+              ease: "power2.out",
+              duration: 0.65,
+            },
+            0
+          )
+          // Phase 3: Visual stage zooms in and centers cleanly on the 3D Z monument with generous top headroom
           .to(
             visualRef.current,
             {
@@ -95,24 +105,30 @@ export default function Hero() {
             },
             0
           )
-          // Phase 3: Hold the centered Z view so the user appreciates the 3D showcase
+          // Phase 4: Hold the centered Z view so the user appreciates the 3D showcase
           .to({}, { duration: 0.35 });
       }
-    }, pinWrapperRef);
+    }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <div className="hero-pinned-wrap" ref={pinWrapperRef}>
-      <section className="hero">
-        <div className="hero-stage" ref={stageRef}>
-          {/* Native studio background effect — ambient radial glow, studio lighting & floor lines */}
+    <div className="hero-scroll-container" ref={containerRef}>
+      <div className="hero-sticky-frame">
+        <div className="hero-stage">
+          {/* Native studio background effect — ambient radial glow, grid & floor lines */}
           <div className="hero-native-bg">
             <div className="native-bg-glow" />
-            <div className="native-bg-beam" />
             <div className="native-bg-grid" />
             <div className="native-bg-floor" />
+          </div>
+
+          {/* Pedestal volumetric glow burst — animates and flares during Z zoom */}
+          <div className="hero-pedestal-burst" ref={burstRef}>
+            <div className="burst-core" />
+            <div className="burst-rays" />
+            <div className="burst-ambient" />
           </div>
 
           {/* Scalable visual container holding the 3D monument */}
@@ -172,7 +188,7 @@ export default function Hero() {
         <div className="hero-stats-wrap" ref={statsRef}>
           <StatsBar />
         </div>
-      </section>
+      </div>
     </div>
   );
 }

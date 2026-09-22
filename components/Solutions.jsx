@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 /* Icon art is cropped directly from the reference video's
    "Our Solutions" frame (frame_006.png) — pixel-exact match. */
@@ -22,25 +27,63 @@ const PAGE_COUNT = Math.ceil(SOLUTIONS.length / PAGE_SIZE);
 
 export default function Solutions() {
   const [page, setPage] = useState(0);
+  const sectionRef = useRef(null);
   const gridRef = useRef(null);
 
   useEffect(() => {
-    if (!gridRef.current) return;
-    const cards = gridRef.current.querySelectorAll(".solution-card");
-    gsap.fromTo(
-      cards,
-      { opacity: 0, y: 24 },
-      { opacity: 1, y: 0, duration: 0.55, stagger: 0.08, ease: "power2.out" }
-    );
+    if (typeof window === "undefined" || !sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // 1. Reveal section title & eyebrow when scrolled into view
+      gsap.fromTo(
+        ".solutions-header",
+        { opacity: 0, y: 32 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+          },
+        }
+      );
+
+      // 2. Cascade cards in on scroll
+      const cards = gridRef.current?.querySelectorAll(".solution-card");
+      if (cards && cards.length) {
+        gsap.fromTo(
+          cards,
+          { opacity: 0, y: 42, scale: 0.95 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            stagger: 0.07,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: "top 82%",
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, [page]);
 
   const items = SOLUTIONS.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
 
   return (
-    <section className="solutions" id="solutions">
+    <section className="solutions" id="solutions" ref={sectionRef}>
       <div className="section-inner">
-        <p className="eyebrow center">What we offer</p>
-        <h2 className="section-title center">Our Solutions</h2>
+        <div className="solutions-header">
+          <p className="eyebrow center">What we offer</p>
+          <h2 className="section-title center">Our Solutions</h2>
+        </div>
 
         <div className="solutions-grid" ref={gridRef}>
           {items.map((item) => (
