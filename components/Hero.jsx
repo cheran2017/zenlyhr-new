@@ -86,7 +86,7 @@ export default function Hero() {
             {
               scale: 1.55,
               opacity: 1,
-              xPercent: -21,
+              xPercent: -24.5,
               filter: "brightness(1.3)",
               ease: "power2.out",
               duration: 0.65,
@@ -98,7 +98,7 @@ export default function Hero() {
             visualRef.current,
             {
               scale: 1.34,
-              xPercent: -21,
+              xPercent: -24.5,
               yPercent: 7,
               ease: "power1.inOut",
               duration: 0.65,

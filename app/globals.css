@@ -142,7 +142,13 @@ button { font-family: inherit; cursor: pointer; }
   z-index: 100;
   padding: 14px 24px;
   pointer-events: none;
-  transition: padding 0.3s ease;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, padding 0.3s ease;
+  will-change: transform, opacity;
+}
+.site-nav.nav--hidden {
+  transform: translateY(-120%);
+  opacity: 0;
+  pointer-events: none;
 }
 .nav-inner {
   position: relative;
@@ -250,7 +256,7 @@ button { font-family: inherit; cursor: pointer; }
   top: 0;
   width: 100%;
   height: 100vh;
-  min-height: 640px;
+  min-height: 560px;
   max-height: 100vh;
   overflow: hidden;
   display: flex;
@@ -260,6 +266,7 @@ button { font-family: inherit; cursor: pointer; }
 .hero-stage {
   position: relative;
   flex: 1;
+  min-height: 0;
   width: 100%;
   overflow: hidden;
   display: flex;
@@ -294,7 +301,7 @@ button { font-family: inherit; cursor: pointer; }
 /* Radiant pedestal volumetric glow flaring open during Z zoom */
 .hero-pedestal-burst {
   position: absolute;
-  left: 71%;
+  left: 74.5%;
   bottom: 8%;
   transform: translateX(-50%);
   width: 580px;
@@ -371,7 +378,7 @@ button { font-family: inherit; cursor: pointer; }
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  transform-origin: 65% 50%;
+  transform-origin: 74% 50%;
   will-change: transform;
 }
 
@@ -386,7 +393,7 @@ button { font-family: inherit; cursor: pointer; }
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 42%;
+  left: 49%;
   right: 0;
 }
 .hero-3d-canvas {
@@ -422,8 +429,8 @@ button { font-family: inherit; cursor: pointer; }
   z-index: 2;
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 104px 24px 60px;
-  min-height: clamp(560px, 50vw, 720px);
+  padding: 84px 24px 16px;
+  width: 100%;
   display: flex;
   align-items: center;
   pointer-events: none;
@@ -431,15 +438,15 @@ button { font-family: inherit; cursor: pointer; }
 .hero-copy {
   position: relative;
   z-index: 2;
-  max-width: 500px;
+  max-width: 470px;
   pointer-events: auto;
 }
 .hero-title {
-  font-size: clamp(32px, 3.6vw, 48px);
+  font-size: clamp(28px, 3.1vw, 42px);
   line-height: 1.15;
   font-weight: 800;
   letter-spacing: -0.015em;
-  margin: 0 0 20px;
+  margin: 0 0 16px;
 }
 .hero-title .title-line {
   display: block;
@@ -449,36 +456,43 @@ button { font-family: inherit; cursor: pointer; }
 }
 .hero-sub {
   color: var(--ink-soft);
-  font-size: 15.5px;
-  line-height: 1.65;
-  max-width: 44ch;
-  margin: 0 0 28px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  max-width: 42ch;
+  margin: 0 0 24px;
 }
 .hero-ctas {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
 /* ---------- stats bar ---------- */
-.stats-bar { position: relative; z-index: 2; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: 14px; background: #ffffff; }
+.hero-stats-wrap {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  width: 100%;
+  background: #ffffff;
+}
+.stats-bar { position: relative; z-index: 2; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: 0; background: #ffffff; }
 .stats-inner {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 16px 24px 18px;
+  padding: 12px 24px 14px;
   display: grid;
   grid-template-columns: repeat(4, auto) 1fr;
-  gap: 24px;
+  gap: 20px;
   align-items: center;
 }
-.stat { display: flex; flex-direction: column; gap: 3px; min-width: 118px; }
-.stat-num { font-size: 26px; font-weight: 800; color: var(--teal); }
-.stat-label { font-size: 12.5px; color: var(--ink-soft); font-weight: 600; }
+.stat { display: flex; flex-direction: column; gap: 2px; min-width: 110px; }
+.stat-num { font-size: 24px; font-weight: 800; color: var(--teal); }
+.stat-label { font-size: 12px; color: var(--ink-soft); font-weight: 600; }
 
-.logo-strip { display: flex; flex-direction: column; gap: 8px; padding-left: 24px; border-left: 1px solid var(--line); }
-.logo-strip-label { font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
-.logos { display: flex; gap: 20px; flex-wrap: wrap; font-weight: 800; font-size: 13px; color: #94a3b8; }
+.logo-strip { display: flex; flex-direction: column; gap: 6px; padding-left: 20px; border-left: 1px solid var(--line); }
+.logo-strip-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
+.logos { display: flex; gap: 18px; flex-wrap: wrap; font-weight: 800; font-size: 12.5px; color: #94a3b8; }
 
 /* ---------- solutions ---------- */
 .solutions { padding: 56px 0 44px; scroll-margin-top: 100px; }

@@ -31,7 +31,7 @@ const PILLS = [
    the same unmistakable "rolling around the monument" read at a pace
    that sits behind text rather than competing with it. */
 const ORBIT_SECONDS = 13;
-const ORBIT_RADIUS = 2.5;
+const ORBIT_RADIUS = 2.15;
 const ORBIT_TILT = 0.3; // radians; the ring is tipped so it reads as 3D
 const PILL_WORLD_HEIGHT = 0.43;
 
@@ -194,7 +194,7 @@ export default function HeroMonument() {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-    camera.position.set(0, 0.72, 12.6);
+    camera.position.set(0, 0.48, 12.2);
     camera.lookAt(0, -0.15, 0);
 
     const renderer = new THREE.WebGLRenderer({

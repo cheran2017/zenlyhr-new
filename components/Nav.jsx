@@ -4,16 +4,36 @@ import { useEffect, useState } from "react";
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    window.addEventListener("scroll", onScroll);
+    let lastScrollY = typeof window !== "undefined" ? window.scrollY : 0;
+
+    const onScroll = () => {
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 8);
+
+      // Hide header when scrolling down past top fold, reveal when scrolling up or at top
+      if (currentScrollY <= 20) {
+        setHidden(false);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // Scrolling down -> hide
+        setHidden(true);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up -> reveal
+        setHidden(false);
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <header className={`site-nav${scrolled ? " scrolled" : ""}`}>
+    <header className={`site-nav${scrolled ? " scrolled" : ""}${hidden ? " nav--hidden" : ""}`}>
       <div className="nav-inner">
         <a href="#" className="brand" aria-label="Zenly HR">
           {/* eslint-disable-next-line @next/next/no-img-element */}
