@@ -209,30 +209,30 @@ export default function HeroMonument() {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.18;
 
-    // ---- lighting, warmed to sit in the photographed lobby ----
-    scene.add(new THREE.HemisphereLight(0xffffff, 0xcfcabc, 1.35));
-    const key = new THREE.DirectionalLight(0xfff6e8, 2.1);
-    key.position.set(4.5, 6.5, 5);
+    // ---- studio lighting with soft teal bounce ----
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xd0e8e8, 1.45));
+    const key = new THREE.DirectionalLight(0xffffff, 2.3);
+    key.position.set(4.5, 7.0, 5.5);
     key.castShadow = true;
     key.shadow.mapSize.set(1024, 1024);
     key.shadow.camera.near = 1;
     key.shadow.camera.far = 24;
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0xdfe9ff, 0.55);
+    const fill = new THREE.DirectionalLight(0x008080, 0.45);
     fill.position.set(-5, 2.5, 2);
     scene.add(fill);
-    const rim = new THREE.DirectionalLight(0xffffff, 0.8);
-    rim.position.set(-2, 1.5, -5);
+    const rim = new THREE.DirectionalLight(0xd4f5f5, 1.1);
+    rim.position.set(-2, 2.5, -4.5);
     scene.add(rim);
 
     const marble = makeMarbleTexture();
     const stone = new THREE.MeshPhysicalMaterial({
       map: marble,
-      color: 0xe6e1d9,
-      roughness: 0.48,
-      metalness: 0.0,
-      clearcoat: 0.32,
-      clearcoatRoughness: 0.38,
+      color: 0xf6f4ee,
+      roughness: 0.36,
+      metalness: 0.02,
+      clearcoat: 0.55,
+      clearcoatRoughness: 0.22,
     });
 
     // ---- the Z ----
@@ -248,9 +248,9 @@ export default function HeroMonument() {
     // ---- plinth ----
     const plinthMat = new THREE.MeshPhysicalMaterial({
       map: marble,
-      color: 0xd8d5cc,
-      roughness: 0.5,
-      clearcoat: 0.3,
+      color: 0xeae7df,
+      roughness: 0.42,
+      clearcoat: 0.35,
     });
     const plinthTop = new THREE.Mesh(new THREE.CylinderGeometry(1.62, 1.7, 0.36, 72), plinthMat);
     plinthTop.position.y = -1.32;
@@ -260,8 +260,8 @@ export default function HeroMonument() {
     const goldRing = new THREE.Mesh(
       new THREE.CylinderGeometry(1.92, 1.92, 0.06, 72),
       new THREE.MeshStandardMaterial({
-        color: 0x827555, metalness: 0.72, roughness: 0.42,
-        emissive: 0x827555, emissiveIntensity: 0.04,
+        color: 0xd4af37, metalness: 0.85, roughness: 0.25,
+        emissive: 0x996515, emissiveIntensity: 0.08,
       })
     );
     goldRing.position.y = -1.53;
@@ -269,11 +269,37 @@ export default function HeroMonument() {
 
     const plinthBase = new THREE.Mesh(
       new THREE.CylinderGeometry(2.0, 2.08, 0.26, 72),
-      new THREE.MeshStandardMaterial({ map: marble, color: 0xcfccc3, roughness: 0.62 })
+      new THREE.MeshStandardMaterial({ map: marble, color: 0xdcd8ce, roughness: 0.55 })
     );
     plinthBase.position.y = -1.69;
     plinthBase.receiveShadow = true;
     scene.add(plinthBase);
+
+    // ---- floor contact shadow for grounding on native background ----
+    const shadowCanvas = document.createElement("canvas");
+    shadowCanvas.width = shadowCanvas.height = 256;
+    const sctx = shadowCanvas.getContext("2d");
+    const sgrad = sctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+    sgrad.addColorStop(0, "rgba(0, 50, 50, 0.35)");
+    sgrad.addColorStop(0.35, "rgba(0, 40, 40, 0.18)");
+    sgrad.addColorStop(0.7, "rgba(0, 30, 30, 0.05)");
+    sgrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+    sctx.fillStyle = sgrad;
+    sctx.fillRect(0, 0, 256, 256);
+    const shadowTex = new THREE.CanvasTexture(shadowCanvas);
+
+    const floorShadow = new THREE.Mesh(
+      new THREE.PlaneGeometry(5.4, 5.4),
+      new THREE.MeshBasicMaterial({
+        map: shadowTex,
+        transparent: true,
+        opacity: 0.85,
+        depthWrite: false,
+      })
+    );
+    floorShadow.rotation.x = -Math.PI / 2;
+    floorShadow.position.y = -1.83;
+    scene.add(floorShadow);
 
     /* Light pooling on the plinth. A flat disc reads as a green sticker,
        so the alpha is painted as a radial falloff and the mesh is
@@ -339,15 +365,15 @@ export default function HeroMonument() {
       );
 
     const resize = () => {
-      const { width, height } = mount.getBoundingClientRect();
+      const width = mount.clientWidth;
+      const height = mount.clientHeight;
       if (!width || !height) return;
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
     };
     resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(mount);
+    window.addEventListener("resize", resize);
 
     /* Sprites share the monument's depth buffer, so an orbiting chip can
        be partially hidden by the Z's diagonal exactly as it would be in
@@ -393,7 +419,7 @@ export default function HeroMonument() {
 
     return () => {
       cancelAnimationFrame(raf);
-      ro.disconnect();
+      window.removeEventListener("resize", resize);
       compactLayout.removeEventListener("change", syncCompactLayout);
       renderer.dispose();
       marble.dispose();
