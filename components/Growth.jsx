@@ -45,12 +45,14 @@ export default function Growth() {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
+        resizeDelay: 150,
         plugins: { legend: { display: false } },
         scales: {
           y: { grid: { color: "#e2e8f0" }, ticks: { color: "#64748b" } },
           x: { grid: { display: false }, ticks: { color: "#64748b" } },
         },
-        animation: { duration: 1400, easing: "easeOutQuart" },
+        animation: { duration: 1200, easing: "easeOutQuart" },
       },
     });
     return () => chartRef.current?.destroy();
@@ -77,6 +79,7 @@ export default function Growth() {
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
+          observer.disconnect();
           gsap.to(els, {
             opacity: 1,
             y: 0,
@@ -93,10 +96,9 @@ export default function Growth() {
               { width: "64%", duration: 1.5, ease: "power2.out" }
             );
           }
-          observer.disconnect();
         });
       },
-      { threshold: 0.4 }
+      { threshold: 0.2 }
     );
     observer.observe(visualRef.current);
     return () => observer.disconnect();
@@ -115,7 +117,9 @@ export default function Growth() {
           </p>
 
           <div className="chart-card">
-            <canvas ref={canvasRef} height={220}></canvas>
+            <div className="chart-canvas-wrap">
+              <canvas ref={canvasRef}></canvas>
+            </div>
             <div className="chart-badge" ref={chartBadgeRef}>+0%</div>
           </div>
 

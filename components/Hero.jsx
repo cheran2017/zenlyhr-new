@@ -78,9 +78,9 @@ export default function Hero() {
         .to(
           visualRef.current,
           {
-            scale: 1.68,
-            xPercent: -17,
-            yPercent: 3,
+            scale: 1.55,
+            xPercent: -21,
+            yPercent: 2,
             ease: "power2.inOut",
             duration: 0.65,
           },
