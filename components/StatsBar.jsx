@@ -4,13 +4,13 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 const STATS = [
-  { count: 11566, suffix: "+", label: "Production Businesses" },
-  { count: 104, suffix: "+", label: "Formats & Exchanges" },
+  { count: 11566, suffix: "+", label: "Production Business" },
+  { count: 104, suffix: "+", label: "Formats & Recharges" },
   { count: 131, suffix: "+", label: "Business Relations" },
-  { count: 55, suffix: "%", label: "Satisfaction Rate" },
+  { count: 55, suffix: "%", label: "See Activities" },
 ];
 
-const LOGOS = ["PARTNER", "ORBIT", "REFINE", "ECOMMERCE CO", "QRA", "BAYLEY"];
+const LOGOS = ["TRAIA", "Inflige!", "Refies", "Communcy", "ORA", "Boolgey"];
 
 export default function StatsBar() {
   const refs = useRef([]);
@@ -59,7 +59,7 @@ export default function StatsBar() {
         ))}
 
         <div className="logo-strip">
-          <span className="logo-strip-label">Trusted by leading businesses</span>
+          <span className="logo-strip-label">Proudly selected by leading businesses</span>
           <div className="logos">
             {LOGOS.map((l) => (
               <span key={l}>{l}</span>

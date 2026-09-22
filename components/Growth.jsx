@@ -186,6 +186,9 @@ export default function Growth() {
             <span className="float-card-title">Employee Engagement</span>
             <span className="float-card-value" ref={floatValueRef}>+0%</span>
             <div className="float-progress"><span ref={floatProgressRef} style={{ width: "0%" }}></span></div>
+            <div className="float-milestones">
+              <span>1Q</span><span>1H</span><span>1Y</span><span>2Y</span><span>5Y</span>
+            </div>
           </div>
 
           <div className="float-icon float-icon--bulb">

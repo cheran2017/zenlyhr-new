@@ -81,7 +81,6 @@ export default function Solutions() {
     <section className="solutions" id="solutions" ref={sectionRef}>
       <div className="section-inner">
         <div className="solutions-header">
-          <p className="eyebrow center">What we offer</p>
           <h2 className="section-title center">Our Solutions</h2>
         </div>
 
@@ -104,13 +103,13 @@ export default function Solutions() {
           ))}
         </div>
 
-        <div className="dots" hidden={PAGE_COUNT < 2}>
-          {Array.from({ length: PAGE_COUNT }).map((_, i) => (
+        <div className="dots">
+          {[0, 1, 2, 3].map((d) => (
             <button
-              key={i}
-              className={i === page ? "active" : ""}
-              onClick={() => setPage(i)}
-              aria-label={`Page ${i + 1}`}
+              key={d}
+              className={d === page ? "active" : ""}
+              onClick={() => setPage(d % PAGE_COUNT)}
+              aria-label={`Page ${d + 1}`}
             />
           ))}
         </div>
