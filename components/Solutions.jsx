@@ -30,6 +30,7 @@ export default function Solutions() {
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 80%",
+            toggleActions: "play none none reverse",
           },
         }
       );
@@ -50,6 +51,7 @@ export default function Solutions() {
             scrollTrigger: {
               trigger: gridRef.current,
               start: "top 82%",
+              toggleActions: "play none none reverse",
             },
           }
         );
@@ -72,6 +74,7 @@ export default function Solutions() {
             scrollTrigger: {
               trigger: gridRef.current,
               start: "top 82%",
+              toggleActions: "play none none reverse",
             },
           }
         );

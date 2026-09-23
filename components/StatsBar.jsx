@@ -2,6 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const STATS = [
   { count: 11566, suffix: "+", label: "Production Business" },
@@ -16,29 +21,48 @@ export default function StatsBar() {
   const refs = useRef([]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const idx = Number(entry.target.dataset.idx);
-          const stat = STATS[idx];
-          const numEl = entry.target.querySelector(".stat-num");
-          const obj = { val: 0 };
-          gsap.to(obj, {
-            val: stat.count,
-            duration: 1.6,
-            ease: "power2.out",
-            onUpdate: () => {
-              numEl.textContent = Math.round(obj.val).toLocaleString() + stat.suffix;
-            },
-          });
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.5 }
-    );
-    refs.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
+    if (typeof window === "undefined") return;
+
+    const tweens = [];
+    const triggers = [];
+
+    refs.current.forEach((el, idx) => {
+      if (!el) return;
+      const stat = STATS[idx];
+      const numEl = el.querySelector(".stat-num");
+
+      const obj = { val: 0 };
+      const tween = gsap.to(obj, {
+        val: stat.count,
+        duration: 1.6,
+        ease: "power2.out",
+        paused: true,
+        onUpdate: () => {
+          numEl.textContent = Math.round(obj.val).toLocaleString() + stat.suffix;
+        },
+      });
+      tweens.push(tween);
+
+      triggers.push(
+        ScrollTrigger.create({
+          trigger: el,
+          start: "top 85%",
+          // Scrolling down: count up fresh each time it comes into view.
+          onEnter: () => tween.restart(),
+          // Scrolling back up past the stats bar: reset silently while
+          // off-screen so the counters replay from 0 next time.
+          onLeaveBack: () => {
+            tween.pause(0);
+            numEl.textContent = "0" + stat.suffix;
+          },
+        })
+      );
+    });
+
+    return () => {
+      triggers.forEach((t) => t.kill());
+      tweens.forEach((t) => t.kill());
+    };
   }, []);
 
   return (
@@ -48,7 +72,6 @@ export default function StatsBar() {
           <div
             className="stat"
             key={s.label}
-            data-idx={i}
             ref={(el) => (refs.current[i] = el)}
           >
             <span className="stat-num">0</span>

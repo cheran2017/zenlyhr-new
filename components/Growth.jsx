@@ -123,6 +123,7 @@ export default function Growth() {
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 75%",
+            toggleActions: "play none none reverse",
           },
         }
       );
@@ -141,6 +142,7 @@ export default function Growth() {
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 75%",
+            toggleActions: "play none none reverse",
           },
         }
       );
@@ -150,93 +152,96 @@ export default function Growth() {
   }, []);
 
   useEffect(() => {
-    if (!visualRef.current) return;
-    const els = visualRef.current.querySelectorAll(".float-card, .float-icon");
-    const floatingTweens = [];
+    if (typeof window === "undefined" || !visualRef.current) return;
 
+    const els = visualRef.current.querySelectorAll(".float-card, .float-icon");
+    let floatingTweens = [];
+    let countTweens = [];
+    let progressTween = null;
+
+    const killFloating = () => {
+      floatingTweens.forEach((t) => t.kill());
+      floatingTweens = [];
+    };
+    const killCounts = () => {
+      countTweens.forEach((t) => t.kill());
+      countTweens = [];
+    };
     const countUp = (el) => {
       if (!el) return;
       const obj = { val: 0 };
-      gsap.to(obj, {
-        val: GROWTH_PERCENT,
-        duration: 1.5,
-        ease: "power2.out",
-        onUpdate: () => {
-          el.textContent = `+${Math.round(obj.val)}%`;
-        },
-      });
+      countTweens.push(
+        gsap.to(obj, {
+          val: GROWTH_PERCENT,
+          duration: 1.5,
+          ease: "power2.out",
+          onUpdate: () => {
+            el.textContent = `+${Math.round(obj.val)}%`;
+          },
+        })
+      );
+    };
+    const startFloating = () => {
+      const card = visualRef.current?.querySelector(".float-card");
+      const bulb = visualRef.current?.querySelector(".float-icon--bulb");
+      const bars = visualRef.current?.querySelector(".float-icon--bars");
+      if (card) {
+        floatingTweens.push(gsap.to(card, { y: -8, duration: 2.8, repeat: -1, yoyo: true, ease: "sine.inOut" }));
+      }
+      if (bulb) {
+        floatingTweens.push(gsap.to(bulb, { y: -10, duration: 2.4, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 0.2 }));
+      }
+      if (bars) {
+        floatingTweens.push(gsap.to(bars, { y: 7, duration: 3.1, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 0.4 }));
+      }
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          observer.disconnect();
-          gsap.to(els, {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            stagger: 0.12,
-            ease: "power2.out",
-            onComplete: () => {
-              const card = visualRef.current?.querySelector(".float-card");
-              const bulb = visualRef.current?.querySelector(".float-icon--bulb");
-              const bars = visualRef.current?.querySelector(".float-icon--bars");
-
-              if (card) {
-                floatingTweens.push(
-                  gsap.to(card, {
-                    y: -8,
-                    duration: 2.8,
-                    repeat: -1,
-                    yoyo: true,
-                    ease: "sine.inOut",
-                  })
-                );
-              }
-              if (bulb) {
-                floatingTweens.push(
-                  gsap.to(bulb, {
-                    y: -10,
-                    duration: 2.4,
-                    repeat: -1,
-                    yoyo: true,
-                    ease: "sine.inOut",
-                    delay: 0.2,
-                  })
-                );
-              }
-              if (bars) {
-                floatingTweens.push(
-                  gsap.to(bars, {
-                    y: 7,
-                    duration: 3.1,
-                    repeat: -1,
-                    yoyo: true,
-                    ease: "sine.inOut",
-                    delay: 0.4,
-                  })
-                );
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        els,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.12,
+          ease: "power2.out",
+          onComplete: startFloating,
+          scrollTrigger: {
+            trigger: visualRef.current,
+            start: "top 82%",
+            toggleActions: "play none none reverse",
+            // Scrolling down in: count up and set the floating cards adrift.
+            onEnter: () => {
+              killFloating();
+              killCounts();
+              countUp(chartBadgeRef.current);
+              countUp(floatValueRef.current);
+              if (floatProgressRef.current) {
+                progressTween?.kill();
+                progressTween = gsap.to(floatProgressRef.current, { width: "64%", duration: 1.5, ease: "power2.out" });
               }
             },
-          });
-          countUp(chartBadgeRef.current);
-          countUp(floatValueRef.current);
-          if (floatProgressRef.current) {
-            gsap.fromTo(
-              floatProgressRef.current,
-              { width: "0%" },
-              { width: "64%", duration: 1.5, ease: "power2.out" }
-            );
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-    observer.observe(visualRef.current);
+            // Scrolling back up past the section: reset silently while off-screen
+            // so the next time it scrolls into view it counts up fresh again.
+            onLeaveBack: () => {
+              killFloating();
+              killCounts();
+              progressTween?.kill();
+              if (chartBadgeRef.current) chartBadgeRef.current.textContent = "+0%";
+              if (floatValueRef.current) floatValueRef.current.textContent = "+0%";
+              if (floatProgressRef.current) gsap.set(floatProgressRef.current, { width: "0%" });
+            },
+          },
+        }
+      );
+    }, visualRef);
+
     return () => {
-      observer.disconnect();
-      floatingTweens.forEach((t) => t.kill());
+      ctx.revert();
+      killFloating();
+      killCounts();
+      progressTween?.kill();
     };
   }, []);
 
