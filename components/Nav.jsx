@@ -16,6 +16,16 @@ export default function Nav() {
       const currentScrollY = window.scrollY;
       setScrolled(currentScrollY > 8);
 
+      // On mobile the header is the only way to reach the menu/CTA (no
+      // hover, no persistent sidebar), so hiding it on scroll-down makes
+      // navigation feel like it vanished until you scroll back up. Keep
+      // it pinned there and only auto-hide on wider (desktop) viewports.
+      if (window.matchMedia("(max-width: 980px)").matches) {
+        setHidden(false);
+        lastScrollY = currentScrollY;
+        return;
+      }
+
       // Hide header when scrolling down past top fold, reveal when scrolling up or at top
       if (currentScrollY <= 20) {
         setHidden(false);
