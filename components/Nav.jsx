@@ -56,6 +56,10 @@ export default function Nav() {
           <a href="#solutions" className="nav-link" onClick={() => setOpen(false)}>Solutions</a>
           <a href="#growth" className="nav-link" onClick={() => setOpen(false)}>Products</a>
           <a href="#about" className="nav-link" onClick={() => setOpen(false)}>About</a>
+          <div className="nav-links-theme-row">
+            <span>Appearance</span>
+            <ThemeToggle />
+          </div>
         </nav>
 
         <div className="nav-actions">

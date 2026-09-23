@@ -87,7 +87,7 @@ export default function BookDemoModal() {
                   <input type="text" name="company" placeholder="Company Inc." required />
                 </label>
                 <label>
-                  Phone <span className="optional">(optional)</span>
+                  <span>Phone <span className="optional">(optional)</span></span>
                   <input type="tel" name="phone" placeholder="+1 (555) 000-0000" />
                 </label>
               </div>
