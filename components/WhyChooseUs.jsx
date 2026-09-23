@@ -43,7 +43,6 @@ const OFFSETS = REASONS.map((_, i) => (i - (REASONS.length - 1) / 2) * STEP);
 
 export default function WhyChooseUs() {
   const sectionRef = useRef(null);
-  const trackRef = useRef(null);
   const cardsRef = useRef(null);
 
   useEffect(() => {
@@ -67,13 +66,14 @@ export default function WhyChooseUs() {
         }
       );
 
-      // Cards start stacked dead-center and fan out as the (pinned,
-      // CSS-sticky) track scrolls past — same mechanism as the hero's
-      // Z zoom: a tall container + a sticky child + a scrubbed tween,
-      // so it only "completes" once the user has actually scrolled
-      // through it, and reverses cleanly on scroll-up.
+      // Cards start stacked dead-center and fan out the moment the
+      // section scrolls into view — a quick, fixed-duration reveal
+      // (not tied to how far you scroll) so it plays out immediately
+      // instead of requiring a long scroll to complete. Reverses back
+      // to stacked if you scroll back up past the section, same as
+      // every other reveal on the page.
       const cards = cardsRef.current?.querySelectorAll(".why-card");
-      if (!cards || !cards.length || !trackRef.current) return;
+      if (!cards || !cards.length) return;
 
       gsap.matchMedia().add("(min-width: 980px)", () => {
         gsap.fromTo(
@@ -83,13 +83,13 @@ export default function WhyChooseUs() {
             x: (i) => OFFSETS[i],
             opacity: 1,
             scale: 1,
+            duration: 0.9,
             ease: "power2.out",
-            stagger: 0.15,
+            stagger: 0.12,
             scrollTrigger: {
-              trigger: trackRef.current,
-              start: "top top",
-              end: "bottom bottom",
-              scrub: 0.6,
+              trigger: cardsRef.current,
+              start: "top 75%",
+              toggleActions: "play none none reverse",
             },
           }
         );
@@ -106,24 +106,20 @@ export default function WhyChooseUs() {
         <h2 className="section-title center">Why choose us</h2>
       </div>
 
-      <div className="why-choose-track" ref={trackRef}>
-        <div className="why-choose-sticky">
-          <div className="why-choose-cards" ref={cardsRef}>
-            {REASONS.map((r, i) => (
-              <div
-                className="why-card"
-                key={r.title}
-                style={{ zIndex: 10 - Math.abs(i - (REASONS.length - 1) / 2) }}
-              >
-                <div className="why-card-icon">
-                  <FeatureIcon name={r.icon} />
-                </div>
-                <h3>{r.title}</h3>
-                <p>{r.desc}</p>
-              </div>
-            ))}
+      <div className="why-choose-cards" ref={cardsRef}>
+        {REASONS.map((r, i) => (
+          <div
+            className="why-card"
+            key={r.title}
+            style={{ zIndex: 10 - Math.abs(i - (REASONS.length - 1) / 2) }}
+          >
+            <div className="why-card-icon">
+              <FeatureIcon name={r.icon} />
+            </div>
+            <h3>{r.title}</h3>
+            <p>{r.desc}</p>
           </div>
-        </div>
+        ))}
       </div>
     </section>
   );

@@ -647,26 +647,14 @@ button { font-family: inherit; cursor: pointer; }
 .float-icon--bars { bottom: 10%; right: -14px; }
 
 /* ---------- why choose us (stacked cards fan out on scroll) ---------- */
-.why-choose { padding: 56px 0 32px; }
+.why-choose { padding: 56px 0 72px; }
 .why-choose-header { margin-bottom: 8px; }
 
-.why-choose-track {
-  position: relative;
-  height: 220vh;
-}
-.why-choose-sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
 .why-choose-cards {
   position: relative;
   width: 100%;
   height: 300px;
+  margin-top: 32px;
 }
 .why-card {
   position: absolute;
@@ -692,26 +680,19 @@ button { font-family: inherit; cursor: pointer; }
 .why-card h3 { font-size: 16px; font-weight: 800; margin: 0 0 8px; color: var(--text); }
 .why-card p { font-size: 13.5px; color: var(--text-soft); line-height: 1.6; margin: 0; }
 
-/* Below the desktop pin breakpoint, skip the scroll-pin entirely and
-   fall back to a plain swipeable row — matches how the hero's Z zoom
-   already disables its scroll-linked animation on mobile. */
+/* Below the desktop breakpoint, skip the fan-out animation entirely
+   and fall back to a plain swipeable row — matches how the hero's Z
+   zoom already disables its scroll-linked animation on mobile. */
 @media (max-width: 979px) {
-  .why-choose-track { height: auto; }
-  .why-choose-sticky {
-    position: static;
-    height: auto;
-    display: block;
-    overflow: visible;
-    padding: 8px 24px 4px;
-  }
   .why-choose-cards {
     position: static;
     height: auto;
     display: flex;
     gap: 16px;
+    margin-top: 24px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding-bottom: 4px;
+    padding: 4px 24px 8px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
