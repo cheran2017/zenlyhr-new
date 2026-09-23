@@ -646,6 +646,87 @@ button { font-family: inherit; cursor: pointer; }
 .float-icon--bulb { top: 6%; right: -6px; color: var(--gold); }
 .float-icon--bars { bottom: 10%; right: -14px; }
 
+/* ---------- why choose us (stacked cards fan out on scroll) ---------- */
+.why-choose { padding: 56px 0 32px; }
+.why-choose-header { margin-bottom: 8px; }
+
+.why-choose-track {
+  position: relative;
+  height: 220vh;
+}
+.why-choose-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.why-choose-cards {
+  position: relative;
+  width: 100%;
+  height: 300px;
+}
+.why-card {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -140px;
+  width: 280px;
+  padding: 28px 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  opacity: 0;
+}
+.why-card-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--teal-light);
+  color: var(--teal-dark);
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.why-card h3 { font-size: 16px; font-weight: 800; margin: 0 0 8px; color: var(--text); }
+.why-card p { font-size: 13.5px; color: var(--text-soft); line-height: 1.6; margin: 0; }
+
+/* Below the desktop pin breakpoint, skip the scroll-pin entirely and
+   fall back to a plain swipeable row — matches how the hero's Z zoom
+   already disables its scroll-linked animation on mobile. */
+@media (max-width: 979px) {
+  .why-choose-track { height: auto; }
+  .why-choose-sticky {
+    position: static;
+    height: auto;
+    display: block;
+    overflow: visible;
+    padding: 8px 24px 4px;
+  }
+  .why-choose-cards {
+    position: static;
+    height: auto;
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .why-choose-cards::-webkit-scrollbar { display: none; }
+  .why-card {
+    position: static;
+    margin-left: 0;
+    flex: none;
+    width: 78vw;
+    max-width: 300px;
+    opacity: 1;
+    scroll-snap-align: center;
+  }
+}
+
 /* ---------- modern saas footer ---------- */
 .site-footer {
   background: linear-gradient(180deg, #072a2d 0%, #031618 100%);
