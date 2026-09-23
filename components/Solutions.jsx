@@ -1,32 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SOLUTIONS } from "./solutionsData";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-/* Icon art is cropped directly from the reference video's
-   "Our Solutions" frame (frame_006.png) — pixel-exact match. */
-const SOLUTIONS = [
-  { icon: "/icons/chair.png", title: "Office & Administration", desc: "Streamline day-to-day office operations and admin workflows." },
-  { icon: "/icons/shield.png", title: "Employee Engagement", desc: "Employee surveys, recognition, and culture-building tools." },
-  { icon: "/icons/gradcap.png", title: "Learning & HR", desc: "Employee onboarding, training and career development." },
-  { icon: "/icons/globe.png", title: "Global HR", desc: "Manage distributed teams and multi-country compliance." },
-  { icon: "/icons/chair2.png", title: "Talent Acquisition", desc: "Focused sourcing, interviewing and hiring pipelines." },
-  { icon: "/icons/barchart.png", title: "Payroll & Processing", desc: "Accurate, on-time payroll processing and reporting." },
-  { icon: "/icons/monitor.png", title: "Accessibility", desc: "Inclusive tools that support diverse and remote teams." },
-  { icon: "/icons/doc.png", title: "Compliance Design", desc: "Policy templates and audit-ready documentation." },
-];
-
-/* The reference clip shows all 8 cards at once as 2 rows of 4. */
-const PAGE_SIZE = 8;
-const PAGE_COUNT = Math.ceil(SOLUTIONS.length / PAGE_SIZE);
-
 export default function Solutions() {
-  const [page, setPage] = useState(0);
   const sectionRef = useRef(null);
   const gridRef = useRef(null);
 
@@ -70,12 +54,32 @@ export default function Solutions() {
           }
         );
       }
+
+      // 3. Icons pop in with a little bounce, slightly behind each card's own entrance
+      const icons = gridRef.current?.querySelectorAll(".solution-icon img");
+      if (icons && icons.length) {
+        gsap.fromTo(
+          icons,
+          { opacity: 0, scale: 0.4, rotate: -12 },
+          {
+            opacity: 1,
+            scale: 1,
+            rotate: 0,
+            duration: 0.7,
+            stagger: 0.07,
+            delay: 0.12,
+            ease: "back.out(1.8)",
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: "top 82%",
+            },
+          }
+        );
+      }
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [page]);
-
-  const items = SOLUTIONS.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+  }, []);
 
   return (
     <section className="solutions" id="solutions" ref={sectionRef}>
@@ -85,32 +89,21 @@ export default function Solutions() {
         </div>
 
         <div className="solutions-grid" ref={gridRef}>
-          {items.map((item) => (
-            <div className="solution-card" key={item.title}>
+          {SOLUTIONS.map((item) => (
+            <div className="solution-card" key={item.slug}>
               <div className="solution-icon">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={item.icon} alt="" />
               </div>
               <h3>{item.title}</h3>
               <p>{item.desc}</p>
-              <a href="#" className="card-link">
+              <Link href={`/solutions/${item.slug}`} className="card-link">
                 Learn More
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-              </a>
+              </Link>
             </div>
-          ))}
-        </div>
-
-        <div className="dots">
-          {[0, 1, 2, 3].map((d) => (
-            <button
-              key={d}
-              className={d === page ? "active" : ""}
-              onClick={() => setPage(d % PAGE_COUNT)}
-              aria-label={`Page ${d + 1}`}
-            />
           ))}
         </div>
       </div>

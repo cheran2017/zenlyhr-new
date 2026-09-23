@@ -3,6 +3,8 @@ import Hero from "@/components/Hero";
 import Solutions from "@/components/Solutions";
 import Growth from "@/components/Growth";
 import Footer from "@/components/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
+import BookDemoModal from "@/components/BookDemoModal";
 
 export default function Home() {
   return (
@@ -12,6 +14,8 @@ export default function Home() {
       <Solutions />
       <Growth />
       <Footer />
+      <ScrollToTop />
+      <BookDemoModal />
     </>
   );
 }

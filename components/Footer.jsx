@@ -1,3 +1,7 @@
+"use client";
+
+import { openBookDemo } from "./bookDemoEvents";
+
 export default function Footer() {
   return (
     <footer className="site-footer">
@@ -12,15 +16,15 @@ export default function Footer() {
             </p>
           </div>
           <div className="footer-cta-actions">
-            <a href="#solutions" className="btn btn-solid btn-lg">
+            <button type="button" className="btn btn-solid btn-lg" onClick={openBookDemo}>
               Request a demo
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-            </a>
-            <a href="#" className="btn btn-ghost-white btn-lg">
+            </button>
+            <button type="button" className="btn btn-ghost-white btn-lg" onClick={openBookDemo}>
               Contact sales
-            </a>
+            </button>
           </div>
         </div>
       </div>

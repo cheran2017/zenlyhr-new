@@ -2,14 +2,54 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Chart from "chart.js/auto";
+import { readCSSVar, THEME_CHANGE_EVENT } from "./theme";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const LABELS = ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"];
 const DATA = [10, 22, 18, 30, 45, 38, 52, 60, 55, 70, 82, 90];
 
 const GROWTH_PERCENT = 32;
 
+/* Chart.js paints to a canvas, so its colors are plain JS strings, not
+   CSS — they don't inherit the page's light/dark variables for free.
+   Reading the current custom properties here (and again on every theme
+   change) keeps the chart in sync instead of staying stuck with
+   whichever theme was active when it first mounted. */
+function chartThemeColors() {
+  const teal = readCSSVar("--teal") || "#008080";
+  const tealRgb = readCSSVar("--teal-rgb") || "0, 128, 128";
+  const surface = readCSSVar("--surface") || "#ffffff";
+  const line = readCSSVar("--line") || "#e2e8f0";
+  const muted = readCSSVar("--text-muted") || "#64748b";
+  return { teal, tealRgb, surface, line, muted };
+}
+
+function applyChartTheme(chart) {
+  if (!chart) return;
+  const { teal, tealRgb, surface, line, muted } = chartThemeColors();
+  const dataset = chart.data.datasets[0];
+  dataset.borderColor = teal;
+  dataset.pointBorderColor = teal;
+  dataset.pointBackgroundColor = surface;
+  dataset.backgroundColor = (ctx) => {
+    const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 220);
+    g.addColorStop(0, `rgba(${tealRgb}, 0.28)`);
+    g.addColorStop(1, `rgba(${tealRgb}, 0)`);
+    return g;
+  };
+  chart.options.scales.y.grid.color = line;
+  chart.options.scales.y.ticks.color = muted;
+  chart.options.scales.x.ticks.color = muted;
+  chart.update();
+}
+
 export default function Growth() {
+  const sectionRef = useRef(null);
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
   const visualRef = useRef(null);
@@ -19,6 +59,7 @@ export default function Growth() {
 
   useEffect(() => {
     if (!canvasRef.current) return;
+    const { teal, tealRgb, surface, line, muted } = chartThemeColors();
     chartRef.current = new Chart(canvasRef.current, {
       type: "line",
       data: {
@@ -27,18 +68,18 @@ export default function Growth() {
           {
             label: "Employee engagement",
             data: DATA,
-            borderColor: "#008080",
+            borderColor: teal,
             backgroundColor: (ctx) => {
               const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 220);
-              g.addColorStop(0, "rgba(0, 128, 128, 0.28)");
-              g.addColorStop(1, "rgba(0, 128, 128, 0)");
+              g.addColorStop(0, `rgba(${tealRgb}, 0.28)`);
+              g.addColorStop(1, `rgba(${tealRgb}, 0)`);
               return g;
             },
             fill: true,
             tension: 0.4,
             pointRadius: 3,
-            pointBackgroundColor: "#fff",
-            pointBorderColor: "#008080",
+            pointBackgroundColor: surface,
+            pointBorderColor: teal,
             pointBorderWidth: 2,
           },
         ],
@@ -49,13 +90,63 @@ export default function Growth() {
         resizeDelay: 150,
         plugins: { legend: { display: false } },
         scales: {
-          y: { grid: { color: "#e2e8f0" }, ticks: { color: "#64748b" } },
-          x: { grid: { display: false }, ticks: { color: "#64748b" } },
+          y: { grid: { color: line }, ticks: { color: muted } },
+          x: { grid: { display: false }, ticks: { color: muted } },
         },
         animation: { duration: 1200, easing: "easeOutQuart" },
       },
     });
-    return () => chartRef.current?.destroy();
+
+    const onThemeChange = () => applyChartTheme(chartRef.current);
+    window.addEventListener(THEME_CHANGE_EVENT, onThemeChange);
+
+    return () => {
+      window.removeEventListener(THEME_CHANGE_EVENT, onThemeChange);
+      chartRef.current?.destroy();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // Reveal the copy column line by line as the section scrolls into view
+      gsap.fromTo(
+        ".growth-copy > *",
+        { opacity: 0, y: 34 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.65,
+          stagger: 0.12,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 75%",
+          },
+        }
+      );
+
+      // Reveal the photo, slightly behind the copy
+      gsap.fromTo(
+        ".photo-frame",
+        { opacity: 0, y: 40, scale: 0.94 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.7,
+          delay: 0.15,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 75%",
+          },
+        }
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
   useEffect(() => {
@@ -150,7 +241,7 @@ export default function Growth() {
   }, []);
 
   return (
-    <section className="growth" id="growth">
+    <section className="growth" id="growth" ref={sectionRef}>
       <div className="section-inner growth-grid">
         <div className="growth-copy">
           <p className="eyebrow">Continuous Growth</p>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { openBookDemo } from "./bookDemoEvents";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -57,14 +59,10 @@ export default function Nav() {
         </nav>
 
         <div className="nav-actions">
-          <button className="icon-btn" aria-label="Search">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
-              <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
+          <ThemeToggle />
+          <button type="button" className="btn btn-solid" onClick={openBookDemo}>
+            Book a demo
           </button>
-          <a href="#" className="btn btn-ghost">Sign in</a>
-          <a href="#solutions" className="btn btn-solid">Sign up</a>
           <button
             className="nav-burger"
             aria-label="Menu"

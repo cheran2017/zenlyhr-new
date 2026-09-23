@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import StatsBar from "./StatsBar";
 import HeroMonument from "./HeroMonument";
+import { openBookDemo } from "./bookDemoEvents";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -15,7 +16,6 @@ export default function Hero() {
   const visualRef = useRef(null);
   const burstRef = useRef(null);
   const copyRef = useRef(null);
-  const statsRef = useRef(null);
 
   const breadcrumbRef = useRef(null);
   const lineRefs = useRef([]);
@@ -58,7 +58,7 @@ export default function Hero() {
         });
 
         scrollTl
-          // Phase 1: Left-hand copy and stats smoothly fade out
+          // Phase 1: Left-hand copy smoothly fades out
           .to(
             copyRef.current,
             {
@@ -67,16 +67,6 @@ export default function Hero() {
               filter: "blur(5px)",
               ease: "power1.inOut",
               duration: 0.35,
-            },
-            0
-          )
-          .to(
-            statsRef.current,
-            {
-              opacity: 0,
-              y: 35,
-              ease: "power1.inOut",
-              duration: 0.28,
             },
             0
           )
@@ -114,81 +104,84 @@ export default function Hero() {
   }, []);
 
   return (
-    <div className="hero-scroll-container" ref={containerRef}>
-      <div className="hero-sticky-frame">
-        <div className="hero-stage">
-          {/* Native studio background effect — ambient radial glow, grid & floor lines */}
-          <div className="hero-native-bg">
-            <div className="native-bg-glow" />
-            <div className="native-bg-grid" />
-            <div className="native-bg-floor" />
-          </div>
-
-          {/* Pedestal volumetric glow burst — animates and flares during Z zoom */}
-          <div className="hero-pedestal-burst" ref={burstRef}>
-            <div className="burst-core" />
-            <div className="burst-rays" />
-            <div className="burst-ambient" />
-          </div>
-
-          {/* Scalable visual container holding the 3D monument */}
-          <div className="hero-visual" ref={visualRef}>
-            <div className="hero-monument">
-              <HeroMonument />
+    <>
+      <div className="hero-scroll-container" ref={containerRef}>
+        <div className="hero-sticky-frame">
+          <div className="hero-stage">
+            {/* Native studio background effect — ambient radial glow, grid & floor lines */}
+            <div className="hero-native-bg">
+              <div className="native-bg-glow" />
+              <div className="native-bg-grid" />
+              <div className="native-bg-floor" />
             </div>
-          </div>
 
-          <div className="hero-inner">
-            <div className="hero-copy" ref={copyRef}>
-              <p className="eyebrow" ref={breadcrumbRef}>
-                People <span>›</span> Confidence <span>›</span> Details
-              </p>
-              <h1 className="hero-title">
-                <span className="title-line" ref={(el) => (lineRefs.current[0] = el)}>
-                  HR, Simplified.
-                </span>
-                <span className="title-line" ref={(el) => (lineRefs.current[1] = el)}>
-                  People, Empowered.
-                </span>
-                <span className="title-line accent" ref={(el) => (lineRefs.current[2] = el)}>
-                  A Brighter Tomorrow.
-                </span>
-              </h1>
-              <p className="hero-sub" ref={subRef}>
-                ZenlyHR brings timeless and central HR solutions together — unifying
-                people, payroll and compliance into one confident, connected experience
-                your whole organization can rely on.
-              </p>
-              <div className="hero-ctas" ref={ctasRef}>
-                <a href="#solutions" className="btn btn-solid btn-lg">
-                  Request a demo
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M5 12H19M19 12L13 6M19 12L13 18"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </a>
-                <button className="btn btn-play">
-                  <span className="play-circle">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
+            {/* Pedestal volumetric glow burst — animates and flares during Z zoom */}
+            <div className="hero-pedestal-burst" ref={burstRef}>
+              <div className="burst-core" />
+              <div className="burst-rays" />
+              <div className="burst-ambient" />
+            </div>
+
+            {/* Scalable visual container holding the 3D monument */}
+            <div className="hero-visual" ref={visualRef}>
+              <div className="hero-monument">
+                <HeroMonument />
+              </div>
+            </div>
+
+            <div className="hero-inner">
+              <div className="hero-copy" ref={copyRef}>
+                <p className="eyebrow" ref={breadcrumbRef}>
+                  People <span>›</span> Confidence <span>›</span> Details
+                </p>
+                <h1 className="hero-title">
+                  <span className="title-line" ref={(el) => (lineRefs.current[0] = el)}>
+                    HR, Simplified.
                   </span>
-                  Watch overview
-                </button>
+                  <span className="title-line" ref={(el) => (lineRefs.current[1] = el)}>
+                    People, Empowered.
+                  </span>
+                  <span className="title-line accent" ref={(el) => (lineRefs.current[2] = el)}>
+                    A Brighter Tomorrow.
+                  </span>
+                </h1>
+                <p className="hero-sub" ref={subRef}>
+                  ZenlyHR brings timeless and central HR solutions together — unifying
+                  people, payroll and compliance into one confident, connected experience
+                  your whole organization can rely on.
+                </p>
+                <div className="hero-ctas" ref={ctasRef}>
+                  <button type="button" className="btn btn-solid btn-lg" onClick={openBookDemo}>
+                    Request a demo
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M5 12H19M19 12L13 6M19 12L13 18"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                  <button className="btn btn-play">
+                    <span className="play-circle">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </span>
+                    Watch overview
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="hero-stats-wrap" ref={statsRef}>
-          <StatsBar />
-        </div>
       </div>
-    </div>
+
+      {/* Normal-flow section — scrolls away with the page instead of pinning with the Z zoom */}
+      <div className="hero-stats-wrap">
+        <StatsBar />
+      </div>
+    </>
   );
 }

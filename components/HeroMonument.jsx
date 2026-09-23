@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { SOLUTIONS } from "./solutionsData";
 
 /* The marble Z and its plinth, rendered as real geometry rather than
    lifted out of the reference video as a flat crop.
@@ -16,14 +17,15 @@ import * as THREE from "three";
    here: the camera frames the subject, and occlusion is a raycast
    against the actual mesh. */
 
-const PILLS = [
-  { key: "manage", label: "Manage", dot: "#008080", angle: 250 },
-  { key: "people", label: "People", dot: "#e5973f", angle: 310 },
-  { key: "global", label: "Go Global", dot: "#009688", angle: 10 },
-  { key: "grow", label: "Grow", dot: "#20b2aa", angle: 70 },
-  { key: "hire", label: "Hire", dot: "#008080", angle: 130 },
-  { key: "comply", label: "Go Comply", dot: "#5b8def", angle: 190 },
-];
+/* The orbiting cards are the site's actual services (shared with the
+   Solutions grid and each service's own page) rather than generic
+   placeholder labels, spaced evenly around the ring. */
+const PILLS = SOLUTIONS.map((s, i) => ({
+  key: s.slug,
+  label: s.shortLabel,
+  dot: s.dot,
+  angle: (250 + i * (360 / SOLUTIONS.length)) % 360,
+}));
 
 /* Timings read off the reference clip. Its ring completes a revolution
    in roughly 7s, but that clip is a sped-up showcase reel — at 7s on a
@@ -31,7 +33,7 @@ const PILLS = [
    the same unmistakable "rolling around the monument" read at a pace
    that sits behind text rather than competing with it. */
 const ORBIT_SECONDS = 13;
-const ORBIT_RADIUS = 2.15;
+const ORBIT_RADIUS = 2.3;
 const ORBIT_TILT = 0.3; // radians; the ring is tipped so it reads as 3D
 const PILL_WORLD_HEIGHT = 0.43;
 
